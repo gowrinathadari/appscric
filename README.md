@@ -34,7 +34,8 @@ Installed tools & Services on EKS cluster:-
 4. Nginx Deployment
 
 Argocd Installation:- 
-**kubectl create namespace argocd
+
+**kubectl create namespace argocd,
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml**
 created Ingress file  in argocd/ folder to access argocd via ui.
 
