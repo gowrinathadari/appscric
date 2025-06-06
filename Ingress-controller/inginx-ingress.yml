@@ -1,0 +1,68 @@
+#helm install nginx-ingress-nginx ingress-nginx/ingress-nginx -f ./ingress-controller/nginx-ingress.yml --version 4.11.0 -n ingress-controller
+controller:
+  publishService:
+    enabled: true
+  extraArgs:
+    enable-ssl-passthrough: ""
+  config:
+    client-body-buffer-size: 500M
+    client-header-buffer-size: 500M
+    http2-max-field-size: 500M
+    http2-max-header-size: 500M
+    proxy-body-size: 20M
+    client-body-timeout: "360"
+    client-header-timeout: "360"
+    proxy-connect-timeout: "360"
+    proxy-read-timeout: "360"
+    proxy-send-timeout: "360"
+    ssl-protocols: "TLSv1.1 TLSv1.2 TLSv1.3"
+    ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA"
+
+  ingressClass: nginx
+  containerPort:
+    http: 80
+    https: 443
+  service:
+    targetPorts:
+      http: http
+      https: https
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+  resources:
+    limits:
+     cpu: 400m
+     memory: 1000Mi
+    requests:
+      cpu: 200m
+      memory: 500Mi
+
+  metrics:
+    port: 10254
+    # if this port is changed, change healthz-port: in extraArgs: accordingly
+    enabled: true
+
+    service:
+      annotations: {}
+      # loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 9913
+      type: ClusterIP
+
+    serviceMonitor:
+      enabled: false
+      additionalLabels:
+        release: kube-prometheus-stack
+      namespace: monitoring
+      namespaceSelector: {}
+      scrapeInterval: 30s
+      # honorLabels: true
+      targetLabels: []
+      metricRelabelings: []
