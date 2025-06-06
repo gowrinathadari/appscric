@@ -33,6 +33,13 @@ Installed tools & Services on EKS cluster:-
 3. argocd
 4. Nginx Deployment
 
+Argocd Installation:- 
+**kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml**
+created Ingress file  in argocd/ folder to access argocd via ui.
+
+
+
 To access Nginx application click here :- https://nginx.cloudearn.in/
 
 To access Argocd Via Ui click here:- https://argocd.cloudearn.in/
